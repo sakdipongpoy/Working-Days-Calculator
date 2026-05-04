@@ -1,19 +1,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Working Days Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Working Days Calculator (Thailand)</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f2f4f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    width: 320px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 15px;
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+button {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.result {
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+.legend {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.holiday {
+    color: red;
+    font-weight: bold;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Working Days Calculator (Thailand)</h2>
+<div class="container">
+    <h2>Working Days (Thailand)</h2>
 
-<input type="date" id="startDate">
-<button onclick="calculate()">Calculate</button>
+    <input type="date" id="startDate">
 
-<p id="result"></p>
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="result" id="result"></div>
+
+    <div class="legend">
+        🟥 Holiday | ⬜ Weekday | ⬛ Weekend (Sun–Sat)
+    </div>
+</div>
 
 <script>
 
+// 🇹🇭 Thailand Holidays (2026)
 const holidays = new Set([
 "2026-01-01","2026-02-02","2026-04-06",
 "2026-04-13","2026-04-14","2026-04-15",
@@ -38,18 +108,33 @@ function calculate() {
     const startDate = new Date(input + "T00:00:00");
     const endDate = new Date(startDate.getFullYear(), 11, 31);
 
-    let count = 0;
+    let workingDays = 0;
+    let holidayCount = 0;
+    let weekendCount = 0;
 
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-        const day = d.getDay();
 
-        if (day !== 0 && day !== 6 && !isHoliday(d)) {
-            count++;
+        const day = d.getDay(); // 0=Sun, 6=Sat
+        const holiday = isHoliday(d);
+
+        if (holiday) {
+            holidayCount++;
+            continue;
         }
+
+        if (day === 0 || day === 6) {
+            weekendCount++;
+            continue;
+        }
+
+        workingDays++;
     }
 
-    document.getElementById("result").innerHTML =
-        "Remaining working days: " + count;
+    document.getElementById("result").innerHTML = `
+        Working Days: <b>${workingDays}</b><br>
+        Holidays: ${holidayCount}<br>
+        Weekends: ${weekendCount}
+    `;
 }
 
 </script>
